@@ -1,0 +1,15 @@
+{
+    "apps": [
+        {
+            "name": "VmBackupManager",
+            "watch": false,
+            "script": "./index.js",
+            "error_file": "./logs/vmbackupcron.log",
+            "out_file": "./logs/vmbackupcron.log",
+            "log_date_format" : "YYYY-MM-DD HH:mm Z",
+            "env": {
+                
+            }
+        }
+    ]
+}

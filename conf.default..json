@@ -1,0 +1,7 @@
+{
+    "intervals":{
+        "dailybackup": "20 1 * * *",
+        "latest_backups":"0 2,6,10,14,18,22 * * *"
+    }
+    
+}

@@ -9,19 +9,19 @@ let cron = require('node-cron');
 const conf = require("./conf.json");
 
 function loadCronJobs(){
-    if(!cron.validate(conf.intervals.dailybackup)){
-        logger.error("Invalid cronstring: "+ conf.intervals.dailybackup);
+    if(!cron.validate(conf.intervals.daily_backup)){
+        logger.error("Invalid cronstring: "+ conf.intervals.daily_backup);
     }
     if(!cron.validate(conf.intervals.latest_backups)){
         logger.error("Invalid cronstring: "+ conf.intervals.latest_backups);
     }
 
     // Daily Backups
-    cron.schedule(conf.intervals.dailybackup, ()=>{
+    cron.schedule(conf.intervals.daily_backup, ()=>{
         createAnduploadBackup(2);
     });
     // Latest Backups
-    cron.schedule(conf.intervals.dailybackup, ()=>{
+    cron.schedule(conf.intervals.daily_backup, ()=>{
         createAnduploadBackup(1);
     });
     

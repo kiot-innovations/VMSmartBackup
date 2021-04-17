@@ -1,21 +1,33 @@
 require('dotenv').config();
+const logger = require('pino')({
+    prettyPrint: true
+});
+
 const { createAnduploadBackup } = require('./utils');
 const { deleteOlderVMBackupFiles } = require('./s3util')
 let cron = require('node-cron');
+const conf = require("./conf.json");
 
+function loadCronJobs(){
+    if(!cron.validate(conf.intervals.dailybackup)){
+        logger.error("Invalid cronstring: "+ conf.intervals.dailybackup);
+    }
+    if(!cron.validate(conf.intervals.latest_backups)){
+        logger.error("Invalid cronstring: "+ conf.intervals.latest_backups);
+    }
 
-// At 01:20.
-cron.schedule('20 1 * * *', () => {
-    // Daily update once.
-    createAnduploadBackup(2);
-});
+    // Daily Backups
+    cron.schedule(conf.intervals.dailybackup, ()=>{
+        createAnduploadBackup(2);
+    });
+    // Latest Backups
+    cron.schedule(conf.intervals.dailybackup, ()=>{
+        createAnduploadBackup(1);
+    });
+    
+}
 
-// Run At minute 0 past hour 2, 6, 10, 14, 18, and 22
-cron.schedule('0 2,6,10,14,18,22 * * *', () => {
-    // Latest Updates
-    createAnduploadBackup(1);
-});
-
+loadCronJobs();
 console.log("Process Started");
 
 // TODO: 

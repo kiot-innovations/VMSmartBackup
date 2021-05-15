@@ -18,6 +18,9 @@ function loadCronJobs(){
     if(!cron.validate(cronConf.intervals.latest_backups)){
         logger.error("Invalid cronstring: "+ cronConf.intervals.latest_backups);
     }
+    if(!cron.validate(cronConf.intervals.delete_old_backups)){
+        logger.error("Invalid cronstring: "+ cronConf.intervals.delete_old_backups);
+    }
 
     // Daily Backups
     cron.schedule(cronConf.intervals.daily_backup, ()=>{

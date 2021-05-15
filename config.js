@@ -11,8 +11,7 @@ const VMConfig = {
     password: process.env.VM_PASSWORD,
     snapshotUrl: process.env.SNPASHOT_URL,
     snapshotDeleteUrl: process.env.SNAPSHOT_DELETE_URL,
-    bucketName: process.env.VM_BACKUP_BUCKET_NAME,
-    backupPrefix: process.env.VM_BACKUP_PREFIX
+    bucketName: process.env.VM_BACKUP_BUCKET_NAME
 }
 
 module.exports = { VMConfig };

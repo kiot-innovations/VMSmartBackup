@@ -38,6 +38,7 @@ function loadCronJobs(){
             duration: cronConf.oldbackups.days * 24* 3600
         });
     });
+    logger.info("Loaded crons");
     
 }
 loadCronJobs();

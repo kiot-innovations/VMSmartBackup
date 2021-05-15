@@ -6,31 +6,35 @@ const logger = require('pino')({
 const { createAnduploadBackup } = require('./utils');
 const { deleteOlderVMBackupFiles } = require('./s3util')
 let cron = require('node-cron');
-const conf = require("./conf.json");
+const cronConf = require("./cron-conf.json");
+const config = require('./config');
+
+// TODO: Handle Errors emitted by cron handler functions. 
 
 function loadCronJobs(){
-    if(!cron.validate(conf.intervals.daily_backup)){
-        logger.error("Invalid cronstring: "+ conf.intervals.daily_backup);
+    if(!cron.validate(cronConf.intervals.daily_backup)){
+        logger.error("Invalid cronstring: "+ cronConf.intervals.daily_backup);
     }
-    if(!cron.validate(conf.intervals.latest_backups)){
-        logger.error("Invalid cronstring: "+ conf.intervals.latest_backups);
+    if(!cron.validate(cronConf.intervals.latest_backups)){
+        logger.error("Invalid cronstring: "+ cronConf.intervals.latest_backups);
     }
 
     // Daily Backups
-    cron.schedule(conf.intervals.daily_backup, ()=>{
+    cron.schedule(cronConf.intervals.daily_backup, ()=>{
         createAnduploadBackup(2);
     });
     // Latest Backups
-    cron.schedule(conf.intervals.daily_backup, ()=>{
+    cron.schedule(cronConf.intervals.latest_backups, ()=>{
         createAnduploadBackup(1);
+    });
+
+    cron.schedule(cronConf.intervals.delete_old_backups, ()=>{
+        deleteOlderVMBackupFiles({
+            bucket: config.VMConfig.bucketName,
+            backupPath: config.VMConfig.backupFullDestinationPrefix,
+            duration: cronConf.oldbackups.days * 24* 3600
+        });
     });
     
 }
-
-loadCronJobs();
-console.log("Process Started");
-
-// TODO: 
-// Delete older updates
-
-// deleteOlderVMBackupFiles();
+// loadCronJobs();

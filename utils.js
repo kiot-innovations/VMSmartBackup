@@ -5,6 +5,7 @@ const logger = require('pino')({
 });
 const util = require('util');
 const exec = util.promisify(require('child_process').exec);
+const {ReportHealthCheckStatus} = require('./healthcheck');
 
 async function createSnapshot() {
     const { data } = await axios({
@@ -44,6 +45,10 @@ async function deleteSnapshot(name) {
  */
 async function createAnduploadBackup(backupType=1) {
     logger.info("Starting Backup Process. BackupType : "+ (backupType == 1? 'Latest': 'Daily'));
+    if (backupType == 2) key = "DAILY_BACKUP";
+    else if (backupType == 1) key = "LATEST_BACKUP";
+
+    ReportHealthCheckStatus(key, "start", "");
     try {
         let snapShotName;
         try {
@@ -54,12 +59,15 @@ async function createAnduploadBackup(backupType=1) {
             }
             logger.info("Snapshot created: " + snapShotName);
         } catch (err) {
+            ReportHealthCheckStatus(key, "fail", err.message);
             logger.error('Snapshot could not be created, err: ' + err.message);
             return;
         }
         try {
             await uploadBackup(snapShotName, backupType);
+            ReportHealthCheckStatus(key, "", ""); // Finish job
         } catch (err) {
+            ReportHealthCheckStatus(key, "fail", err.message);
             logger.error("Error in uploading Backup, err: " + err.message);
         }
 
@@ -71,6 +79,7 @@ async function createAnduploadBackup(backupType=1) {
             }
             logger.info("Snapshot deleted: " + snapShotName);
         } catch (err) {
+            ReportHealthCheckStatus(key, "fail", err.message);
             logger.error('Snapshot could not be deleted, err: ' + err.message);
             return;
         }

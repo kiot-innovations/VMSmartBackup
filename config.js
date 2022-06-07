@@ -1,5 +1,6 @@
 const VMConfig = {
     vmbackupBinary: process.env.VM_BACKUP_BINARY,
+    vmrestoreBinary: process.env.VM_RESTORE_BINARY,
     credsFilePath:process.env.CREDS_FILE_PATH,
     vmDataStoragePath:process.env.VM_DATA_STORAGE_PATH,
     backupFullDestinationPath: process.env.VM_FULL_DESTINATION_PATH,
